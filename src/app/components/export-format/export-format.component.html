@@ -1,0 +1,9 @@
+<div class="result-container">
+  <mat-radio-group [(ngModel)]="selectedFormat" (change)="selectFormat(selectedFormat)">
+    <div *ngFor="let format of exportFormats">
+      <mat-radio-button [value]="format">
+        <h3>{{ format.localizedName }}</h3>
+      </mat-radio-button>
+    </div>
+  </mat-radio-group>
+</div>

@@ -1,0 +1,28 @@
+<mat-vertical-stepper [linear]="true" #stepper>
+  <mat-step [stepControl]="reportFormGroup">
+    <form [formGroup]="reportFormGroup">
+      <ng-template matStepLabel>Reports</ng-template>
+      <app-reports (reportSelected)="onReportSelected($event)"></app-reports>
+      <div class="button-container">
+        <button mat-button matStepperNext [disabled]="!reportFormGroup.valid">Next</button>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step [stepControl]="formatFormGroup">
+    <form [formGroup]="formatFormGroup">
+      <ng-template matStepLabel>Export Format</ng-template>
+      <app-export-format (formatSelected)="onFormatSelected($event)"></app-export-format>
+      <div class="button-container">
+        <button mat-button matStepperPrevious>Back</button>
+        <button mat-button matStepperNext>Next</button>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step>
+    <ng-template matStepLabel>Result</ng-template>
+    <app-result [report]="selectedReport" [format]="selectedFormat"></app-result>
+    <div class="button-container">
+      <button mat-button matStepperPrevious>Back</button>
+    </div>
+  </mat-step>
+</mat-vertical-stepper>

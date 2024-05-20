@@ -1,0 +1,9 @@
+<div class="result-container">
+  <h2>Report Summary</h2>
+  <div class="report-details">
+    <p *ngIf="report"><strong>Selected Report:</strong> {{ report.title }}</p>
+    <p *ngIf="report"><strong>Description:</strong> {{ report.description }}</p>
+    <p *ngIf="format"><strong>Export Format:</strong> {{ format.name }}</p>
+  </div>
+  <button mat-button (click)="createClientId()">Download Report</button>
+</div>

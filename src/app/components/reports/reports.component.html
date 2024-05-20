@@ -1,0 +1,10 @@
+<div class="result-container">
+  <div *ngFor="let report of reports">
+    <mat-radio-group [(ngModel)]="selectedReport" (change)="selectReport(report)">
+      <mat-radio-button [value]="report">
+        <h3>{{report.title}}</h3>
+      </mat-radio-button>
+    </mat-radio-group>
+    <div>{{ report.description }}</div>
+  </div>
+</div>
