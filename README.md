@@ -22,7 +22,7 @@ git clone https://github.com/LyudmilNikolov/Report-Library.git
 2. **Navigate to the project directory:**
 
 ```bash
-cd hcm-application
+cd Report-Library
 ```
 
 3. **Install the dependencies:**
