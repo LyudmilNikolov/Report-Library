@@ -82,7 +82,7 @@ export class ResultComponent {
   }
 
   downloadReport(): void {
-    this.downloadUrl = `https://demos.telerik.com/reporting/api/reports/clients/${this.clientId}/instances/${this.instanceId}/documents/${this.documentId}?response-content-disposition=attachment`;
+    this.downloadUrl = this.reportsService.getDownloadLink(this.clientId, this.instanceId, this.documentId);
     const a = document.createElement('a');
     a.href = this.downloadUrl;
     a.download = `${this.report.title}.${this.format ? this.format.name : 'pdf'}`;

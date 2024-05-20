@@ -8,11 +8,12 @@ import { ExportFormat } from '../interfaces/format';
 })
 export class ReportsService {
   private baseUrl = 'https://demos.telerik.com/reporting/api/reports';
+  private reportingUrl = 'https://demos.telerik.com/reporting';
 
   constructor(private http: HttpClient) {}
 
   getReports(): Observable<string> {
-    return this.http.get('https://demos.telerik.com/reporting', { responseType: 'text' })
+    return this.http.get(`${this.reportingUrl}`, { responseType: 'text' })
   }
 
   getAvailableFormats(): Observable<ExportFormat[]> {
@@ -24,7 +25,7 @@ export class ReportsService {
   }
 
   getReportSource(dataThumbnail: string): Observable<string> {
-    const url = `https://demos.telerik.com/reporting/${dataThumbnail}`;
+    const url = `${this.reportingUrl}/${dataThumbnail}`;
     return this.http.get(url, { responseType: 'text' });
   }
 
@@ -43,5 +44,9 @@ export class ReportsService {
   getDocumentInfo(clientId: string, instanceId: string, documentId: string): Observable<{ documentReady: boolean }> {
     const url = `${this.baseUrl}/clients/${clientId}/instances/${instanceId}/documents/${documentId}/info`;
     return this.http.get<{ documentReady: boolean }>(url);
+  }
+
+  getDownloadLink(clientId: string, instanceId: string, documentId: string): string {
+    return `https://demos.telerik.com/reporting/api/reports/clients/${clientId}/instances/${instanceId}/documents/${documentId}`;
   }
 }
