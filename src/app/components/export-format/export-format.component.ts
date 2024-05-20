@@ -1,5 +1,6 @@
 import { NgFor } from '@angular/common';
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, DestroyRef, EventEmitter, OnInit, Output, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { MatRadioModule } from '@angular/material/radio';
 import { ExportFormat } from '../../interfaces/format';
@@ -18,6 +19,8 @@ export class ExportFormatComponent implements OnInit {
 
   @Output() formatSelected = new EventEmitter<ExportFormat>();
 
+  private destroyRef = inject(DestroyRef);
+
   constructor(private reportsService: ReportsService) {}
 
   ngOnInit(): void {
@@ -25,7 +28,9 @@ export class ExportFormatComponent implements OnInit {
   }
 
   fetchExportFormats(): void {
-    this.reportsService.getAvailableFormats().subscribe(formats => {
+    this.reportsService.getAvailableFormats().pipe(
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe(formats => {
       this.exportFormats = formats;
     });
   }

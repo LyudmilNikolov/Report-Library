@@ -1,5 +1,6 @@
 import { NgIf } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, DestroyRef, Input, inject } from '@angular/core';
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { of } from 'rxjs';
 import { catchError, delay, switchMap, tap } from 'rxjs/operators';
 import { ExportFormat } from '../../interfaces/format';
@@ -23,11 +24,14 @@ export class ResultComponent {
   reportName: string;
   documentId: string;
 
+  private destroyRef = inject(DestroyRef);
+
   constructor(private reportsService: ReportsService) {}
 
   createClientId(): void {
     this.reportsService.registerClient()
       .pipe(
+        takeUntilDestroyed(this.destroyRef),
         tap(response => this.clientId = response.clientId),
         switchMap(() => this.reportsService.getReportSource(this.report.dataThumbnail)),
         switchMap(data => {

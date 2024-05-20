@@ -1,5 +1,6 @@
 import { NgFor } from '@angular/common';
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, DestroyRef, EventEmitter, OnInit, Output, inject } from '@angular/core';
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { FormsModule } from '@angular/forms';
 import { MatRadioModule } from '@angular/material/radio';
 import { Report } from '../../interfaces/report';
@@ -18,6 +19,8 @@ export class ReportsComponent implements OnInit {
 
   @Output() reportSelected = new EventEmitter<Report>();
 
+  private destroyRef = inject(DestroyRef);
+  
   constructor(private reportsService: ReportsService) {}
 
   ngOnInit(): void {
@@ -26,7 +29,8 @@ export class ReportsComponent implements OnInit {
 
   fetchReports(): void {
     this.reportsService.getReports()
-      .subscribe(data => {
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((data) => {
         const parser = new DOMParser();
         const doc = parser.parseFromString(data, 'text/html');
         const reportElements = doc.querySelectorAll('.accordion-item');
