@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ClientResponse, DocumentReady, DocumentResponse, InstanceResponse } from '../interfaces/document';
+import { ClientResponse, DocumentReady, DocumentResponse, InstanceResponse, PageInfo } from '../interfaces/document';
 import { ExportFormat } from '../interfaces/format';
 
 @Injectable({
@@ -85,7 +85,20 @@ export class ReportsService {
   */
   getDocumentInfo(clientId: string, instanceId: string, documentId: string): Observable<DocumentReady> {
     const url = `${this.baseUrl}/clients/${clientId}/instances/${instanceId}/documents/${documentId}/info`;
-    return this.http.get<{ documentReady: boolean }>(url);
+    return this.http.get<DocumentReady>(url);
+  }
+
+  /**
+    * Resolves a page info when is ready for download.
+    * @param clientId - The unique identifier for the client.
+    * @param instanceId - The unique identifier for the instance.
+    * @param documentId - The unique identifier for the document.
+    * @param pageNumber - An integer representing the number of the requested page.
+    * @returns Observable that resolves to a DocumentReady object representing the resolved document info.
+  */
+  getDocumentPage(clientId: string, instanceId: string, documentId: string, pageNumber: string): Observable<PageInfo> {
+    const url = `${this.baseUrl}/clients/${clientId}/instances/${instanceId}/documents/${documentId}/pages/${pageNumber}`;
+    return this.http.get<PageInfo>(url);
   }
 
   /**

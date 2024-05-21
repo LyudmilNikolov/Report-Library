@@ -1,16 +1,19 @@
 import { NgIf } from '@angular/common';
 import { Component, DestroyRef, Input, inject } from '@angular/core';
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { of } from 'rxjs';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { Observable, of } from 'rxjs';
 import { catchError, delay, switchMap, tap } from 'rxjs/operators';
+import { DocumentReady } from '../../interfaces/document';
 import { ExportFormat } from '../../interfaces/format';
 import { Report } from '../../interfaces/report';
 import { ReportsService } from '../../services/reports.service';
+import { PreviewModalComponent } from '../preview-modal/preview-modal.component';
 
 @Component({
   selector: 'app-result',
   standalone: true,
-  imports: [NgIf],
+  imports: [NgIf, MatDialogModule],
   templateUrl: './result.component.html',
   styleUrl: './result.component.scss'
 })
@@ -26,9 +29,9 @@ export class ResultComponent {
 
   private destroyRef = inject(DestroyRef);
 
-  constructor(private reportsService: ReportsService) {}
+  constructor(private reportsService: ReportsService, public dialog: MatDialog) {}
 
-  createClientId(): void {
+  processReport(action: 'preview' | 'download'): void {
     this.reportsService.registerClient()
       .pipe(
         takeUntilDestroyed(this.destroyRef),
@@ -49,22 +52,36 @@ export class ResultComponent {
           return this.reportsService.resolveReportInstance(this.clientId, this.reportName);
         }),
         tap(response => this.instanceId = response.instanceId),
-        switchMap(() => this.reportsService.resolveDocument(this.clientId, this.instanceId, 'HTML5')),
+        switchMap(() => this.reportsService.resolveDocument(this.clientId, this.instanceId, 'HTML5Interactive')),
         tap(response => this.documentId = response.documentId),
         switchMap(() => {
-          const formatName = this.format ? this.format.name : 'PDF';
-          return this.reportsService.resolveDocument(this.clientId, this.instanceId, formatName, this.documentId);
+          if (action === 'download') {
+            const formatName = this.format ? this.format.name : 'PDF';
+            return this.reportsService.resolveDocument(this.clientId, this.instanceId, formatName, this.documentId);
+          } else {
+            return of({ documentId: this.documentId });
+          }
         }),
-        tap(response => this.documentId = response.documentId),
-        switchMap(() => this.pollDocumentReady())
+        switchMap(response => {
+          if (action === 'download') {
+            this.documentId = response.documentId;
+          }
+          return this.pollDocumentReady();
+        })
       )
       .subscribe({
-        next: () => this.downloadReport(),
+        next: () => {
+          if (action === 'preview') {
+            this.previewReport();
+          } else {
+            this.downloadReport();
+          }
+        },
         error: err => console.error(err)
       });
   }
 
-  pollDocumentReady() {
+  pollDocumentReady(): Observable<DocumentReady> {
     return this.reportsService.getDocumentInfo(this.clientId, this.instanceId, this.documentId)
       .pipe(
         switchMap(response => {
@@ -79,6 +96,16 @@ export class ResultComponent {
           return of({ documentReady: false });
         })
       );
+  }
+
+  previewReport(): void {
+    this.reportsService.getDocumentPage(this.clientId, this.instanceId, this.documentId, '1').pipe(
+      takeUntilDestroyed(this.destroyRef))
+      .subscribe(data => {
+      this.dialog.open(PreviewModalComponent, {
+        data: { htmlContent: data.pageContent }
+      });
+    });
   }
 
   downloadReport(): void {

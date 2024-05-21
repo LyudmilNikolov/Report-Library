@@ -37,3 +37,17 @@ export interface DocumentReady {
   */
   documentReady: boolean;
 }
+
+/**
+  * Represents the status for a preview document.
+*/
+export interface PageInfo {
+  /**
+    * The status for the document.
+  */
+  documentReady: boolean;
+  /**
+    * The HTML preview for the document.
+  */
+  pageContent: HTMLElement
+}

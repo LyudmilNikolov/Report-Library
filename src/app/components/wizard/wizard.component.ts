@@ -22,7 +22,7 @@ export class WizardComponent implements OnInit {
 
   constructor(private _formBuilder: FormBuilder) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.reportFormGroup = this._formBuilder.group({
       reportCtrl: ['', Validators.required]
     });
@@ -31,12 +31,12 @@ export class WizardComponent implements OnInit {
     });
   }
 
-  onReportSelected(report: Report) {
+  onReportSelected(report: Report): void {
     this.selectedReport = report;
     this.reportFormGroup.controls['reportCtrl'].setValue(report.title);
   }
 
-  onFormatSelected(format: ExportFormat) {
+  onFormatSelected(format: ExportFormat): void {
     this.selectedFormat = format;
     this.formatFormGroup.controls['formatCtrl'].setValue(format.name);
   }

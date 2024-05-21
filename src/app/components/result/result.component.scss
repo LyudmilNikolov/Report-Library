@@ -14,3 +14,13 @@
   border-top: 1px solid #ccc;
   padding-top: 16px;
 }
+
+.button-container {
+  margin-top: 16px;
+  display: flex;
+  gap: 1rem;
+}
+
+button {
+  min-width: 100px;
+}
